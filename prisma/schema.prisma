@@ -13,25 +13,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model TradeStock {
-  id        Int        @id @default(autoincrement())
-  date      DateTime?
-  broker    Broker?
-  trader    Trader?
-  action    TradeType?
-  ticker    String     @db.VarChar(255)
-  shares    Int?
-  price     Float?
-  fees      Float?
-  amount    Float?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+model StockTrade {
+  id        Int       @id @default(autoincrement())
+  date      DateTime
+  broker    Broker
+  trader    Trader
+  action    TradeType
+  ticker    String    @db.VarChar(255)
+  shares    Float
+  price     Float
+  fees      Float
+  amount    Float
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 enum TradeType {
-  BUY
-  SELL
-  SPLIT
+  Buy
+  Sell
+  Split
 }
 
 enum Broker {
