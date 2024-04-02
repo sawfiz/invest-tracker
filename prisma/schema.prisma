@@ -12,3 +12,37 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model TradeStock {
+  id        Int        @id @default(autoincrement())
+  date      DateTime?
+  broker    Broker?
+  trader    Trader?
+  action    TradeType?
+  ticker    String     @db.VarChar(255)
+  shares    Int?
+  price     Float?
+  fees      Float?
+  amount    Float?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+enum TradeType {
+  BUY
+  SELL
+  SPLIT
+}
+
+enum Broker {
+  MooMoo
+  IBKR
+  Syfe
+}
+
+enum Trader {
+  Xinfei
+  Victor
+  Justin
+  Shuya
+}
