@@ -1,13 +1,13 @@
-import { Button } from '@radix-ui/themes'
-import React from 'react'
+import React from "react";
+import AddStockTrade from "./addStockTrade";
 
 const StocksPage = () => {
   return (
     <div>
       <h1>Stocks Page</h1>
-      <Button>New Trade</Button>
+      <AddStockTrade />
     </div>
-  )
-}
+  );
+};
 
-export default StocksPage
+export default StocksPage;
