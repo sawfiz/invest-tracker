@@ -6,12 +6,13 @@ import {
   Select,
   TextField,
   Text,
+  Box,
 } from "@radix-ui/themes";
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 interface StockTradeForm {
-  data: Date;
+  date: Date;
   broker: string;
   trader: string;
   action: string;
@@ -23,11 +24,17 @@ interface StockTradeForm {
 }
 
 const AddStockTrade = () => {
-  const { register, handleSubmit, getValues } = useForm<StockTradeForm>();
+  const { register, handleSubmit, getValues, setValue, control } =
+    useForm<StockTradeForm>();
   const [amount, setAmount] = useState(0);
 
+  // Calculate amount dynamically based on input changes
   const calcAmount = () => {
-    setAmount(getValues("shares") * getValues("price") + getValues("fees"));
+    // Cast string to number for the calculation
+    const value =
+      getValues("shares") * getValues("price") + Number(getValues("fees"));
+    setAmount(value);
+    setValue("amount", value);
   };
 
   return (
@@ -48,7 +55,7 @@ const AddStockTrade = () => {
                   Date
                 </Text>
               </label>
-              <input type="date" />
+              <input type="date" {...register("date")} />
             </Flex>
 
             {/* Trader */}
@@ -58,17 +65,24 @@ const AddStockTrade = () => {
                   Trader
                 </Text>
               </label>
-              <Select.Root defaultValue="Xinfei">
-                <Select.Trigger />
-                <Select.Content>
-                  <Select.Group>
-                    <Select.Item value="Xinfei">Xinfei</Select.Item>
-                    <Select.Item value="Victor">Victor</Select.Item>
-                    <Select.Item value="Justin">Justin</Select.Item>
-                    <Select.Item value="Shuya">Shuya</Select.Item>
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
+              <Controller
+                name="trader"
+                control={control}
+                defaultValue="Xinfei"
+                render={({ field }) => (
+                  <Select.Root onValueChange={field.onChange} {...field}>
+                    <Select.Trigger />
+                    <Select.Content>
+                      <Select.Group>
+                        <Select.Item value="Xinfei">Xinfei</Select.Item>
+                        <Select.Item value="Victor">Victor</Select.Item>
+                        <Select.Item value="Justin">Justin</Select.Item>
+                        <Select.Item value="Shuya">Shuya</Select.Item>
+                      </Select.Group>
+                    </Select.Content>
+                  </Select.Root>
+                )}
+              />
             </Flex>
 
             {/* Broker */}
@@ -78,16 +92,25 @@ const AddStockTrade = () => {
                   Broker
                 </Text>
               </label>
-              <Select.Root defaultValue="MooMoo">
-                <Select.Trigger />
-                <Select.Content>
-                  <Select.Group>
-                    <Select.Item value="MooMoo">MooMoo</Select.Item>
-                    <Select.Item value="IBKR">Interactive Brokers</Select.Item>
-                    <Select.Item value="Syfe">Syfe</Select.Item>
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
+              <Controller
+                name="broker"
+                control={control}
+                defaultValue="MooMoo"
+                render={({ field }) => (
+                  <Select.Root onValueChange={field.onChange} {...field}>
+                    <Select.Trigger />
+                    <Select.Content>
+                      <Select.Group>
+                        <Select.Item value="MooMoo">MooMoo</Select.Item>
+                        <Select.Item value="IBKR">
+                          Interactive Brokers
+                        </Select.Item>
+                        <Select.Item value="Syfe">Syfe</Select.Item>
+                      </Select.Group>
+                    </Select.Content>
+                  </Select.Root>
+                )}
+              />
             </Flex>
 
             {/* Ticker */}
@@ -97,7 +120,7 @@ const AddStockTrade = () => {
                   Ticker
                 </Text>
               </label>
-              <TextField.Root placeholder="Enter a ticker symbol" />
+              <TextField.Root {...register("ticker")} placeholder="Enter a ticker symbol" />
             </Flex>
 
             {/* Action */}
@@ -107,16 +130,22 @@ const AddStockTrade = () => {
                   Action
                 </Text>
               </label>
-              <Select.Root defaultValue="Buy">
-                <Select.Trigger />
-                <Select.Content>
-                  <Select.Group>
-                    <Select.Item value="Buy">Buy</Select.Item>
-                    <Select.Item value="Sell">Sell</Select.Item>
-                    <Select.Item value="Split">Split</Select.Item>
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
+              <Controller
+                name="action"
+                control={control}
+                defaultValue="Buy"
+                render={({ field }) => (
+                  <Select.Root onValueChange={field.onChange} {...field}>
+                    <Select.Trigger />
+                    <Select.Content>
+                      <Select.Group>
+                        <Select.Item value="Buy">Buy</Select.Item>
+                        <Select.Item value="Sell">Sell</Select.Item>
+                      </Select.Group>
+                    </Select.Content>
+                  </Select.Root>
+                )}
+              />
             </Flex>
 
             {/* Number of Shares */}
@@ -168,10 +197,7 @@ const AddStockTrade = () => {
                   Amount
                 </Text>
               </label>
-              <TextField.Root disabled={true}>
-                {" "}
-                {amount}
-              </TextField.Root>
+              <Box {...register("amount")}>{amount} </Box>
             </Flex>
           </Flex>
 
