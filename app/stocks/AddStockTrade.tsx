@@ -8,23 +8,38 @@ import {
   Text,
 } from "@radix-ui/themes";
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+
+interface StockTradeForm {
+  data: Date;
+  broker: string;
+  trader: string;
+  action: string;
+  ticker: string;
+  shares: number;
+  price: number;
+  fees: number;
+  amount: number;
+}
 
 const AddStockTrade = () => {
-  const [price, setPrice] = useState(0);
-  const [shares, setShares] = useState(0);
-  const [fees, setFees] = useState(0);
-  const amount = price * shares + fees;
+  const { register, handleSubmit, getValues } = useForm<StockTradeForm>();
+  const [amount, setAmount] = useState(0);
+
+  const calcAmount = () => {
+    setAmount(getValues("shares") * getValues("price") + getValues("fees"));
+  };
 
   return (
-    <div>
-      <Dialog.Root>
-        <Dialog.Trigger>
-          <Button>Add Trade</Button>
-        </Dialog.Trigger>
+    <Dialog.Root>
+      <Dialog.Trigger>
+        <Button>Add Trade</Button>
+      </Dialog.Trigger>
 
-        <Dialog.Content maxWidth="300px">
-          <Dialog.Title>Add a Stock Trade</Dialog.Title>
+      <Dialog.Content maxWidth="300px">
+        <Dialog.Title>Add a Stock Trade</Dialog.Title>
 
+        <form onSubmit={handleSubmit(() => console.log(getValues()))}>
           <Flex direction="column" gap="3">
             {/* Date */}
             <Flex gap="3" align="center">
@@ -111,7 +126,11 @@ const AddStockTrade = () => {
                   Shares
                 </Text>
               </label>
-              <TextField.Root placeholder="Number of shares" />
+              <TextField.Root
+                {...register("shares")}
+                onBlur={calcAmount}
+                placeholder="Number of shares"
+              ></TextField.Root>
             </Flex>
 
             {/* Price */}
@@ -121,7 +140,11 @@ const AddStockTrade = () => {
                   Price
                 </Text>
               </label>
-              <TextField.Root placeholder="Share price" />
+              <TextField.Root
+                {...register("price")}
+                onBlur={calcAmount}
+                placeholder="Share price"
+              />
             </Flex>
 
             {/* Fees */}
@@ -131,7 +154,11 @@ const AddStockTrade = () => {
                   Fees
                 </Text>
               </label>
-              <TextField.Root placeholder="Fees" />
+              <TextField.Root
+                {...register("fees")}
+                onBlur={calcAmount}
+                placeholder="Fees"
+              />
             </Flex>
 
             {/* Amount */}
@@ -141,7 +168,10 @@ const AddStockTrade = () => {
                   Amount
                 </Text>
               </label>
-              <TextField.Root disabled={true}> {amount} </TextField.Root>
+              <TextField.Root disabled={true}>
+                {" "}
+                {amount}
+              </TextField.Root>
             </Flex>
           </Flex>
 
@@ -152,12 +182,12 @@ const AddStockTrade = () => {
               </Button>
             </Dialog.Close>
             <Dialog.Close>
-              <Button>Save</Button>
+              <Button type="submit">Save</Button>
             </Dialog.Close>
           </Flex>
-        </Dialog.Content>
-      </Dialog.Root>
-    </div>
+        </form>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };
 
