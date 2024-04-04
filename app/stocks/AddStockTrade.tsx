@@ -9,6 +9,7 @@ import {
   Box,
 } from "@radix-ui/themes";
 import React, { useState } from "react";
+import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
 
 interface StockTradeForm {
@@ -26,16 +27,30 @@ interface StockTradeForm {
 const AddStockTrade = () => {
   const { register, handleSubmit, getValues, setValue, control } =
     useForm<StockTradeForm>();
+
   const [amount, setAmount] = useState(0);
+  const [error, setError] = useState("");
 
   // Calculate amount dynamically based on input changes
   const calcAmount = () => {
     // Cast string to number for the calculation
     const value =
-      getValues("shares") * getValues("price") + getValues("fees");
+      (getValues("shares") || 0) * (getValues("price") || 0) +
+      (getValues("fees") || 0);
     setAmount(value);
     setValue("amount", value);
   };
+
+  const onSubmit = async (data: StockTradeForm) => {
+    calcAmount();
+    console.log(data)
+    try {
+      await axios.post("/api/stocks", data);
+    } catch (error) {
+      console.log(error);
+      setError("An unexpected error has occured.");
+    }
+  }
 
   return (
     <Dialog.Root>
@@ -46,7 +61,7 @@ const AddStockTrade = () => {
       <Dialog.Content maxWidth="300px">
         <Dialog.Title>Add a Stock Trade</Dialog.Title>
 
-        <form onSubmit={handleSubmit((data) => console.log(data))}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Flex direction="column" gap="3">
             {/* Date */}
             <Flex gap="3" align="center">
@@ -55,7 +70,11 @@ const AddStockTrade = () => {
                   Date
                 </Text>
               </label>
-              <input type="date" {...register("date", {valueAsDate: true})} className="px-2"/>
+              <input
+                type="date"
+                {...register("date", { valueAsDate: true })}
+                className="px-2"
+              />
             </Flex>
 
             {/* Trader */}
@@ -161,7 +180,7 @@ const AddStockTrade = () => {
               </label>
               <TextField.Root
                 className="px-2"
-                {...register("shares", {valueAsNumber: true})}
+                {...register("shares", { valueAsNumber: true })}
                 onBlur={calcAmount}
               />
             </Flex>
@@ -175,7 +194,7 @@ const AddStockTrade = () => {
               </label>
               <TextField.Root
                 className="px-2"
-                {...register("price", {valueAsNumber: true})}
+                {...register("price", { valueAsNumber: true })}
                 onBlur={calcAmount}
               />
             </Flex>
@@ -189,7 +208,7 @@ const AddStockTrade = () => {
               </label>
               <TextField.Root
                 className="px-2"
-                {...register("fees", {valueAsNumber: true})}
+                {...register("fees", { valueAsNumber: true })}
                 onBlur={calcAmount}
               />
             </Flex>
