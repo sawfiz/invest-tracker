@@ -55,7 +55,10 @@ const AddStockTrade = () => {
 
   // Reset the form after a successful submission
   useEffect (() => {
-    reset()
+    if (isSubmitSuccessful) {
+      reset()
+      setIsSubmitSuccessful(false)
+    }
   }), [isSubmitSuccessful]
 
   return (

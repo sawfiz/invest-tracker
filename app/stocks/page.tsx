@@ -1,5 +1,5 @@
 import React from "react";
-import AddStockTrade from "./addStockTrade";
+import AddStockTrade from "./AddStockTrade";
 
 const StocksPage = () => {
   return (
