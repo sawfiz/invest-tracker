@@ -7,6 +7,7 @@ import {
   TextField,
   Text,
   Box,
+  Callout,
 } from "@radix-ui/themes";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -51,201 +52,209 @@ const AddStockTrade = () => {
       console.log(error);
       setError("An unexpected error has occured.");
     }
-  }
+  };
 
   // Reset the form after a successful submission
-  useEffect (() => {
+  useEffect(() => {
     if (isSubmitSuccessful) {
-      reset()
-      setIsSubmitSuccessful(false)
+      reset();
+      setIsSubmitSuccessful(false);
     }
-  }), [isSubmitSuccessful]
+  }),
+    [isSubmitSuccessful];
 
   return (
-    <Dialog.Root>
-      <Dialog.Trigger>
-        <Button>Add Trade</Button>
-      </Dialog.Trigger>
+    <div className=" max-w-xl">
+      {error && (
+        <Callout.Root color="red" className="my-2">
+          <Callout.Text>{error}</Callout.Text>
+        </Callout.Root>
+      )}
+      <Dialog.Root>
+        <Dialog.Trigger>
+          <Button>Add Trade</Button>
+        </Dialog.Trigger>
 
-      <Dialog.Content maxWidth="300px">
-        <Dialog.Title>Add a Stock Trade</Dialog.Title>
+        <Dialog.Content maxWidth="300px">
+          <Dialog.Title>Add a Stock Trade</Dialog.Title>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Flex direction="column" gap="3">
-            {/* Date */}
-            <Flex gap="3" align="center">
-              <label className=" w-12">
-                <Text as="div" size="2" mb="1" weight="bold">
-                  Date
-                </Text>
-              </label>
-              <input
-                type="date"
-                {...register("date", { valueAsDate: true })}
-                className="px-2"
-              />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Flex direction="column" gap="3">
+              {/* Date */}
+              <Flex gap="3" align="center">
+                <label className=" w-12">
+                  <Text as="div" size="2" mb="1" weight="bold">
+                    Date
+                  </Text>
+                </label>
+                <input
+                  type="date"
+                  {...register("date", { valueAsDate: true })}
+                  className="px-2"
+                />
+              </Flex>
+
+              {/* Trader */}
+              <Flex gap="3" align="center">
+                <label className="w-12">
+                  <Text as="div" size="2" weight="bold">
+                    Trader
+                  </Text>
+                </label>
+                <Controller
+                  name="trader"
+                  control={control}
+                  defaultValue="Xinfei"
+                  render={({ field: { onChange, value } }) => (
+                    <Select.Root onValueChange={onChange} defaultValue={value}>
+                      <Select.Trigger />
+                      <Select.Content>
+                        <Select.Group>
+                          <Select.Item value="Xinfei">Xinfei</Select.Item>
+                          <Select.Item value="Victor">Victor</Select.Item>
+                          <Select.Item value="Justin">Justin</Select.Item>
+                          <Select.Item value="Shuya">Shuya</Select.Item>
+                        </Select.Group>
+                      </Select.Content>
+                    </Select.Root>
+                  )}
+                />
+              </Flex>
+
+              {/* Broker */}
+              <Flex gap="3" align="center">
+                <label className="w-12">
+                  <Text as="div" size="2" weight="bold">
+                    Broker
+                  </Text>
+                </label>
+                <Controller
+                  name="broker"
+                  control={control}
+                  defaultValue="MooMoo"
+                  render={({ field: { onChange, value } }) => (
+                    <Select.Root onValueChange={onChange} defaultValue={value}>
+                      <Select.Trigger />
+                      <Select.Content>
+                        <Select.Group>
+                          <Select.Item value="MooMoo">MooMoo</Select.Item>
+                          <Select.Item value="IBKR">
+                            Interactive Brokers
+                          </Select.Item>
+                          <Select.Item value="Syfe">Syfe</Select.Item>
+                        </Select.Group>
+                      </Select.Content>
+                    </Select.Root>
+                  )}
+                />
+              </Flex>
+
+              {/* Ticker */}
+              <Flex gap="3" align="center">
+                <label className="w-12">
+                  <Text as="div" size="2" mb="1" weight="bold">
+                    Ticker
+                  </Text>
+                </label>
+                <TextField.Root
+                  {...register("ticker")}
+                  placeholder="Enter a ticker symbol"
+                />
+              </Flex>
+
+              {/* Action */}
+              <Flex gap="3" align="center">
+                <label className="w-12">
+                  <Text as="div" size="2" weight="bold">
+                    Action
+                  </Text>
+                </label>
+                <Controller
+                  name="action"
+                  control={control}
+                  defaultValue="Buy"
+                  render={({ field: { onChange, value } }) => (
+                    <Select.Root onValueChange={onChange} defaultValue={value}>
+                      <Select.Trigger />
+                      <Select.Content>
+                        <Select.Group>
+                          <Select.Item value="Buy">Buy</Select.Item>
+                          <Select.Item value="Sell">Sell</Select.Item>
+                          <Select.Item value="Split">Split</Select.Item>
+                        </Select.Group>
+                      </Select.Content>
+                    </Select.Root>
+                  )}
+                />
+              </Flex>
+
+              {/* Number of Shares */}
+              <Flex gap="3" align="center">
+                <label className="w-12">
+                  <Text as="div" size="2" mb="1" weight="bold">
+                    Shares
+                  </Text>
+                </label>
+                <TextField.Root
+                  className="px-2"
+                  {...register("shares", { valueAsNumber: true })}
+                  onBlur={calcAmount}
+                />
+              </Flex>
+
+              {/* Price */}
+              <Flex gap="3" align="center">
+                <label className="w-12">
+                  <Text as="div" size="2" mb="1" weight="bold">
+                    Price
+                  </Text>
+                </label>
+                <TextField.Root
+                  className="px-2"
+                  {...register("price", { valueAsNumber: true })}
+                  onBlur={calcAmount}
+                />
+              </Flex>
+
+              {/* Fees */}
+              <Flex gap="3" align="center">
+                <label className="w-12">
+                  <Text as="div" size="2" mb="1" weight="bold">
+                    Fees
+                  </Text>
+                </label>
+                <TextField.Root
+                  className="px-2"
+                  {...register("fees", { valueAsNumber: true })}
+                  onBlur={calcAmount}
+                />
+              </Flex>
+
+              {/* Amount */}
+              <Flex gap="3" align="center">
+                <label className="w-16">
+                  <Text as="div" size="2" mb="1" weight="bold">
+                    Amount
+                  </Text>
+                </label>
+                <Box {...register("amount")}>{amount} </Box>
+              </Flex>
             </Flex>
 
-            {/* Trader */}
-            <Flex gap="3" align="center">
-              <label className="w-12">
-                <Text as="div" size="2" weight="bold">
-                  Trader
-                </Text>
-              </label>
-              <Controller
-                name="trader"
-                control={control}
-                defaultValue="Xinfei"
-                render={({ field: { onChange, value } }) => (
-                  <Select.Root onValueChange={onChange} defaultValue={value}>
-                    <Select.Trigger />
-                    <Select.Content>
-                      <Select.Group>
-                        <Select.Item value="Xinfei">Xinfei</Select.Item>
-                        <Select.Item value="Victor">Victor</Select.Item>
-                        <Select.Item value="Justin">Justin</Select.Item>
-                        <Select.Item value="Shuya">Shuya</Select.Item>
-                      </Select.Group>
-                    </Select.Content>
-                  </Select.Root>
-                )}
-              />
+            <Flex gap="3" mt="4" justify="end">
+              <Dialog.Close>
+                <Button variant="soft" color="gray">
+                  Cancel
+                </Button>
+              </Dialog.Close>
+              <Dialog.Close>
+                <Button type="submit">Save</Button>
+              </Dialog.Close>
             </Flex>
-
-            {/* Broker */}
-            <Flex gap="3" align="center">
-              <label className="w-12">
-                <Text as="div" size="2" weight="bold">
-                  Broker
-                </Text>
-              </label>
-              <Controller
-                name="broker"
-                control={control}
-                defaultValue="MooMoo"
-                render={({ field: { onChange, value } }) => (
-                  <Select.Root onValueChange={onChange} defaultValue={value}>
-                    <Select.Trigger />
-                    <Select.Content>
-                      <Select.Group>
-                        <Select.Item value="MooMoo">MooMoo</Select.Item>
-                        <Select.Item value="IBKR">
-                          Interactive Brokers
-                        </Select.Item>
-                        <Select.Item value="Syfe">Syfe</Select.Item>
-                      </Select.Group>
-                    </Select.Content>
-                  </Select.Root>
-                )}
-              />
-            </Flex>
-
-            {/* Ticker */}
-            <Flex gap="3" align="center">
-              <label className="w-12">
-                <Text as="div" size="2" mb="1" weight="bold">
-                  Ticker
-                </Text>
-              </label>
-              <TextField.Root
-                {...register("ticker")}
-                placeholder="Enter a ticker symbol"
-              />
-            </Flex>
-
-            {/* Action */}
-            <Flex gap="3" align="center">
-              <label className="w-12">
-                <Text as="div" size="2" weight="bold">
-                  Action
-                </Text>
-              </label>
-              <Controller
-                name="action"
-                control={control}
-                defaultValue="Buy"
-                render={({ field: { onChange, value } }) => (
-                  <Select.Root onValueChange={onChange} defaultValue={value}>
-                    <Select.Trigger />
-                    <Select.Content>
-                      <Select.Group>
-                        <Select.Item value="Buy">Buy</Select.Item>
-                        <Select.Item value="Sell">Sell</Select.Item>
-                        <Select.Item value="Split">Split</Select.Item>
-                      </Select.Group>
-                    </Select.Content>
-                  </Select.Root>
-                )}
-              />
-            </Flex>
-
-            {/* Number of Shares */}
-            <Flex gap="3" align="center">
-              <label className="w-12">
-                <Text as="div" size="2" mb="1" weight="bold">
-                  Shares
-                </Text>
-              </label>
-              <TextField.Root
-                className="px-2"
-                {...register("shares", { valueAsNumber: true })}
-                onBlur={calcAmount}
-              />
-            </Flex>
-
-            {/* Price */}
-            <Flex gap="3" align="center">
-              <label className="w-12">
-                <Text as="div" size="2" mb="1" weight="bold">
-                  Price
-                </Text>
-              </label>
-              <TextField.Root
-                className="px-2"
-                {...register("price", { valueAsNumber: true })}
-                onBlur={calcAmount}
-              />
-            </Flex>
-
-            {/* Fees */}
-            <Flex gap="3" align="center">
-              <label className="w-12">
-                <Text as="div" size="2" mb="1" weight="bold">
-                  Fees
-                </Text>
-              </label>
-              <TextField.Root
-                className="px-2"
-                {...register("fees", { valueAsNumber: true })}
-                onBlur={calcAmount}
-              />
-            </Flex>
-
-            {/* Amount */}
-            <Flex gap="3" align="center">
-              <label className="w-16">
-                <Text as="div" size="2" mb="1" weight="bold">
-                  Amount
-                </Text>
-              </label>
-              <Box {...register("amount")}>{amount} </Box>
-            </Flex>
-          </Flex>
-
-          <Flex gap="3" mt="4" justify="end">
-            <Dialog.Close>
-              <Button variant="soft" color="gray">
-                Cancel
-              </Button>
-            </Dialog.Close>
-            <Dialog.Close>
-              <Button type="submit">Save</Button>
-            </Dialog.Close>
-          </Flex>
-        </form>
-      </Dialog.Content>
-    </Dialog.Root>
+          </form>
+        </Dialog.Content>
+      </Dialog.Root>
+    </div>
   );
 };
 
