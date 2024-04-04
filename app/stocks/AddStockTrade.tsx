@@ -32,7 +32,7 @@ const AddStockTrade = () => {
   const calcAmount = () => {
     // Cast string to number for the calculation
     const value =
-      getValues("shares") * getValues("price") + Number(getValues("fees"));
+      getValues("shares") * getValues("price") + getValues("fees");
     setAmount(value);
     setValue("amount", value);
   };
@@ -46,7 +46,7 @@ const AddStockTrade = () => {
       <Dialog.Content maxWidth="300px">
         <Dialog.Title>Add a Stock Trade</Dialog.Title>
 
-        <form onSubmit={handleSubmit(() => console.log(getValues()))}>
+        <form onSubmit={handleSubmit((data) => console.log(data))}>
           <Flex direction="column" gap="3">
             {/* Date */}
             <Flex gap="3" align="center">
@@ -55,7 +55,7 @@ const AddStockTrade = () => {
                   Date
                 </Text>
               </label>
-              <input type="date" {...register("date")} />
+              <input type="date" {...register("date", {valueAsDate: true})} className="px-2"/>
             </Flex>
 
             {/* Trader */}
@@ -69,8 +69,8 @@ const AddStockTrade = () => {
                 name="trader"
                 control={control}
                 defaultValue="Xinfei"
-                render={({ field }) => (
-                  <Select.Root onValueChange={field.onChange} {...field}>
+                render={({ field: { onChange, value } }) => (
+                  <Select.Root onValueChange={onChange} defaultValue={value}>
                     <Select.Trigger />
                     <Select.Content>
                       <Select.Group>
@@ -96,8 +96,8 @@ const AddStockTrade = () => {
                 name="broker"
                 control={control}
                 defaultValue="MooMoo"
-                render={({ field }) => (
-                  <Select.Root onValueChange={field.onChange} {...field}>
+                render={({ field: { onChange, value } }) => (
+                  <Select.Root onValueChange={onChange} defaultValue={value}>
                     <Select.Trigger />
                     <Select.Content>
                       <Select.Group>
@@ -120,7 +120,10 @@ const AddStockTrade = () => {
                   Ticker
                 </Text>
               </label>
-              <TextField.Root {...register("ticker")} placeholder="Enter a ticker symbol" />
+              <TextField.Root
+                {...register("ticker")}
+                placeholder="Enter a ticker symbol"
+              />
             </Flex>
 
             {/* Action */}
@@ -134,13 +137,14 @@ const AddStockTrade = () => {
                 name="action"
                 control={control}
                 defaultValue="Buy"
-                render={({ field }) => (
-                  <Select.Root onValueChange={field.onChange} {...field}>
+                render={({ field: { onChange, value } }) => (
+                  <Select.Root onValueChange={onChange} defaultValue={value}>
                     <Select.Trigger />
                     <Select.Content>
                       <Select.Group>
                         <Select.Item value="Buy">Buy</Select.Item>
                         <Select.Item value="Sell">Sell</Select.Item>
+                        <Select.Item value="Split">Split</Select.Item>
                       </Select.Group>
                     </Select.Content>
                   </Select.Root>
@@ -156,10 +160,10 @@ const AddStockTrade = () => {
                 </Text>
               </label>
               <TextField.Root
-                {...register("shares")}
+                className="px-2"
+                {...register("shares", {valueAsNumber: true})}
                 onBlur={calcAmount}
-                placeholder="Number of shares"
-              ></TextField.Root>
+              />
             </Flex>
 
             {/* Price */}
@@ -170,9 +174,9 @@ const AddStockTrade = () => {
                 </Text>
               </label>
               <TextField.Root
-                {...register("price")}
+                className="px-2"
+                {...register("price", {valueAsNumber: true})}
                 onBlur={calcAmount}
-                placeholder="Share price"
               />
             </Flex>
 
@@ -184,9 +188,9 @@ const AddStockTrade = () => {
                 </Text>
               </label>
               <TextField.Root
-                {...register("fees")}
+                className="px-2"
+                {...register("fees", {valueAsNumber: true})}
                 onBlur={calcAmount}
-                placeholder="Fees"
               />
             </Flex>
 
