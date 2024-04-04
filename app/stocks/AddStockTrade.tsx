@@ -8,7 +8,7 @@ import {
   Text,
   Box,
 } from "@radix-ui/themes";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
 
@@ -25,15 +25,15 @@ interface StockTradeForm {
 }
 
 const AddStockTrade = () => {
-  const { register, handleSubmit, getValues, setValue, control } =
+  const { register, handleSubmit, getValues, setValue, control, reset } =
     useForm<StockTradeForm>();
 
   const [amount, setAmount] = useState(0);
   const [error, setError] = useState("");
+  const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false);
 
   // Calculate amount dynamically based on input changes
   const calcAmount = () => {
-    // Cast string to number for the calculation
     const value =
       (getValues("shares") || 0) * (getValues("price") || 0) +
       (getValues("fees") || 0);
@@ -41,16 +41,22 @@ const AddStockTrade = () => {
     setValue("amount", value);
   };
 
+  // Submit form data to the api / database
   const onSubmit = async (data: StockTradeForm) => {
     calcAmount();
-    console.log(data)
     try {
       await axios.post("/api/stocks", data);
+      setIsSubmitSuccessful(true);
     } catch (error) {
       console.log(error);
       setError("An unexpected error has occured.");
     }
   }
+
+  // Reset the form after a successful submission
+  useEffect (() => {
+    reset()
+  }), [isSubmitSuccessful]
 
   return (
     <Dialog.Root>
