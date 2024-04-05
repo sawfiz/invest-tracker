@@ -46,7 +46,6 @@ const AddStockTrade = () => {
 
   const [amount, setAmount] = useState(0);
   const [error, setError] = useState("");
-  const [isSubmiting, setIsSubmiting] = useState(false);
   const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -61,7 +60,6 @@ const AddStockTrade = () => {
 
   // Submit form data to the api / database
   const onSubmit = async (data: StockTradeForm) => {
-    setIsSubmiting(true);
     calcAmount();
     console.log(data);
     console.log(getValues("date").toISOString());
@@ -69,7 +67,6 @@ const AddStockTrade = () => {
       await axios.post("/api/stocks", data);
       setIsSubmitSuccessful(true);
       setOpenDialog(false);
-      setIsSubmiting(false);
     } catch (error) {
       console.log(error);
       setError("An unexpected error has occured.");
