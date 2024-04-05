@@ -242,6 +242,7 @@ const AddStockTrade = () => {
                   className="px-2"
                   {...register("shares", { valueAsNumber: true })}
                   onBlur={calcAmount}
+                  onFocus={e => e.target.select()}
                 />
               </Flex>
               {errors.shares && (
@@ -261,6 +262,7 @@ const AddStockTrade = () => {
                   className="px-2"
                   {...register("price", { valueAsNumber: true })}
                   onBlur={calcAmount}
+                  onFocus={e => e.target.select()}
                 />
               </Flex>
               {errors.price && (
@@ -280,6 +282,7 @@ const AddStockTrade = () => {
                   className="px-2"
                   {...register("fees", { valueAsNumber: true })}
                   onBlur={calcAmount}
+                  onFocus={e => e.target.select()}
                 />
               </Flex>
               {errors.fees && (
