@@ -15,6 +15,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createStockTradeSchema } from "../validationSchemas";
 import { z } from "zod";
+import ErrorMessage from "../components/ErrorMessage";
 
 type StockTradeForm = z.infer<typeof createStockTradeSchema>;
 
@@ -45,7 +46,7 @@ const AddStockTrade = () => {
   const [amount, setAmount] = useState(0);
   const [error, setError] = useState("");
   const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false)
+  const [openDialog, setOpenDialog] = useState(false);
 
   // Calculate amount dynamically based on input changes
   const calcAmount = () => {
@@ -59,12 +60,12 @@ const AddStockTrade = () => {
   // Submit form data to the api / database
   const onSubmit = async (data: StockTradeForm) => {
     calcAmount();
-    console.log(data)
-    console.log(getValues("date").toISOString())
+    console.log(data);
+    console.log(getValues("date").toISOString());
     try {
       await axios.post("/api/stocks", data);
       setIsSubmitSuccessful(true);
-      setOpenDialog(false)
+      setOpenDialog(false);
     } catch (error) {
       console.log(error);
       setError("An unexpected error has occured.");
@@ -106,17 +107,18 @@ const AddStockTrade = () => {
                 </label>
                 <input
                   type="date"
-                  // value={getValues("date").toISOString().substring(0, 10)}
-                  {...register("date", { valueAsDate: true,
-                    required: { value: true, message: "Date of Birth is required" }, })}
+                  // defaultValue={getValues("date").toISOString().substring(0, 10)}
+                  {...register("date", {
+                    valueAsDate: true,
+                    required: {
+                      value: true,
+                      message: "Date of Birth is required",
+                    },
+                  })}
                   className="px-2"
                 />
               </Flex>
-              {errors.date && (
-                <Text color="red" as="p">
-                  {errors.date.message}
-                </Text>
-              )}
+              <ErrorMessage>{errors.date?.message}</ErrorMessage>
 
               {/* Trader */}
               <Flex gap="3" align="center">
@@ -143,11 +145,7 @@ const AddStockTrade = () => {
                   )}
                 />
               </Flex>
-              {errors.trader && (
-                <Text color="red" as="p">
-                  {errors.trader.message}
-                </Text>
-              )}
+              <ErrorMessage>{errors.trader?.message}</ErrorMessage>
 
               {/* Broker */}
               <Flex gap="3" align="center">
@@ -175,11 +173,7 @@ const AddStockTrade = () => {
                   )}
                 />
               </Flex>
-              {errors.broker && (
-                <Text color="red" as="p">
-                  {errors.broker.message}
-                </Text>
-              )}
+              <ErrorMessage>{errors.broker?.message}</ErrorMessage>
 
               {/* Ticker */}
               <Flex gap="3" align="center">
@@ -195,11 +189,7 @@ const AddStockTrade = () => {
                   placeholder="Enter a ticker symbol"
                 />
               </Flex>
-              {errors.ticker && (
-                <Text color="red" as="p">
-                  {errors.ticker.message}
-                </Text>
-              )}
+              <ErrorMessage>{errors.ticker?.message}</ErrorMessage>
 
               {/* Action */}
               <Flex gap="3" align="center">
@@ -225,11 +215,7 @@ const AddStockTrade = () => {
                   )}
                 />
               </Flex>
-              {errors.action && (
-                <Text color="red" as="p">
-                  {errors.action.message}
-                </Text>
-              )}
+              <ErrorMessage>{errors.action?.message}</ErrorMessage>
 
               {/* Number of Shares */}
               <Flex gap="3" align="center">
@@ -242,14 +228,10 @@ const AddStockTrade = () => {
                   className="px-2"
                   {...register("shares", { valueAsNumber: true })}
                   onBlur={calcAmount}
-                  onFocus={e => e.target.select()}
+                  onFocus={(e) => e.target.select()}
                 />
               </Flex>
-              {errors.shares && (
-                <Text color="red" as="p">
-                  {errors.shares.message}
-                </Text>
-              )}
+              <ErrorMessage>{errors.shares?.message}</ErrorMessage>
 
               {/* Price */}
               <Flex gap="3" align="center">
@@ -262,14 +244,10 @@ const AddStockTrade = () => {
                   className="px-2"
                   {...register("price", { valueAsNumber: true })}
                   onBlur={calcAmount}
-                  onFocus={e => e.target.select()}
+                  onFocus={(e) => e.target.select()}
                 />
               </Flex>
-              {errors.price && (
-                <Text color="red" as="p">
-                  {errors.price.message}
-                </Text>
-              )}
+              <ErrorMessage>{errors.price?.message}</ErrorMessage>
 
               {/* Fees */}
               <Flex gap="3" align="center">
@@ -282,14 +260,10 @@ const AddStockTrade = () => {
                   className="px-2"
                   {...register("fees", { valueAsNumber: true })}
                   onBlur={calcAmount}
-                  onFocus={e => e.target.select()}
+                  onFocus={(e) => e.target.select()}
                 />
               </Flex>
-              {errors.fees && (
-                <Text color="red" as="p">
-                  {errors.fees.message}
-                </Text>
-              )}
+              <ErrorMessage>{errors.fees?.message}</ErrorMessage>
 
               {/* Amount */}
               <Flex gap="3" align="center">
@@ -309,7 +283,7 @@ const AddStockTrade = () => {
                 </Button>
               </Dialog.Close>
               {/* <Dialog.Close> */}
-                <Button type="submit">Save</Button>
+              <Button type="submit">Save</Button>
               {/* </Dialog.Close> */}
             </Flex>
           </form>
