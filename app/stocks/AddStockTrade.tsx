@@ -12,26 +12,40 @@ import {
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createStockTradeSchema } from "../validationSchemas";
+import { z } from "zod";
 
-interface StockTradeForm {
-  date: Date;
-  broker: string;
-  trader: string;
-  action: string;
-  ticker: string;
-  shares: number;
-  price: number;
-  fees: number;
-  amount: number;
-}
+type StockTradeForm = z.infer<typeof createStockTradeSchema>;
 
 const AddStockTrade = () => {
-  const { register, handleSubmit, getValues, setValue, control, reset } =
-    useForm<StockTradeForm>();
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    setValue,
+    control,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<StockTradeForm>({
+    resolver: zodResolver(createStockTradeSchema),
+    defaultValues: {
+      date: new Date(),
+      trader: "Xinfei",
+      broker: "MooMoo",
+      ticker: "",
+      action: "Buy",
+      shares: 0,
+      price: 0,
+      fees: 0,
+      amount: 0,
+    },
+  });
 
   const [amount, setAmount] = useState(0);
   const [error, setError] = useState("");
   const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false)
 
   // Calculate amount dynamically based on input changes
   const calcAmount = () => {
@@ -45,9 +59,12 @@ const AddStockTrade = () => {
   // Submit form data to the api / database
   const onSubmit = async (data: StockTradeForm) => {
     calcAmount();
+    console.log(data)
+    console.log(getValues("date").toISOString())
     try {
       await axios.post("/api/stocks", data);
       setIsSubmitSuccessful(true);
+      setOpenDialog(false)
     } catch (error) {
       console.log(error);
       setError("An unexpected error has occured.");
@@ -70,7 +87,7 @@ const AddStockTrade = () => {
           <Callout.Text>{error}</Callout.Text>
         </Callout.Root>
       )}
-      <Dialog.Root>
+      <Dialog.Root open={openDialog} onOpenChange={setOpenDialog}>
         <Dialog.Trigger>
           <Button>Add Trade</Button>
         </Dialog.Trigger>
@@ -89,10 +106,17 @@ const AddStockTrade = () => {
                 </label>
                 <input
                   type="date"
-                  {...register("date", { valueAsDate: true })}
+                  // value={getValues("date").toISOString().substring(0, 10)}
+                  {...register("date", { valueAsDate: true,
+                    required: { value: true, message: "Date of Birth is required" }, })}
                   className="px-2"
                 />
               </Flex>
+              {errors.date && (
+                <Text color="red" as="p">
+                  {errors.date.message}
+                </Text>
+              )}
 
               {/* Trader */}
               <Flex gap="3" align="center">
@@ -104,7 +128,6 @@ const AddStockTrade = () => {
                 <Controller
                   name="trader"
                   control={control}
-                  defaultValue="Xinfei"
                   render={({ field: { onChange, value } }) => (
                     <Select.Root onValueChange={onChange} defaultValue={value}>
                       <Select.Trigger />
@@ -120,6 +143,11 @@ const AddStockTrade = () => {
                   )}
                 />
               </Flex>
+              {errors.trader && (
+                <Text color="red" as="p">
+                  {errors.trader.message}
+                </Text>
+              )}
 
               {/* Broker */}
               <Flex gap="3" align="center">
@@ -131,7 +159,6 @@ const AddStockTrade = () => {
                 <Controller
                   name="broker"
                   control={control}
-                  defaultValue="MooMoo"
                   render={({ field: { onChange, value } }) => (
                     <Select.Root onValueChange={onChange} defaultValue={value}>
                       <Select.Trigger />
@@ -148,6 +175,11 @@ const AddStockTrade = () => {
                   )}
                 />
               </Flex>
+              {errors.broker && (
+                <Text color="red" as="p">
+                  {errors.broker.message}
+                </Text>
+              )}
 
               {/* Ticker */}
               <Flex gap="3" align="center">
@@ -157,10 +189,17 @@ const AddStockTrade = () => {
                   </Text>
                 </label>
                 <TextField.Root
-                  {...register("ticker")}
+                  {...register("ticker", {
+                    required: { value: true, message: "Ticker is required" },
+                  })}
                   placeholder="Enter a ticker symbol"
                 />
               </Flex>
+              {errors.ticker && (
+                <Text color="red" as="p">
+                  {errors.ticker.message}
+                </Text>
+              )}
 
               {/* Action */}
               <Flex gap="3" align="center">
@@ -172,7 +211,6 @@ const AddStockTrade = () => {
                 <Controller
                   name="action"
                   control={control}
-                  defaultValue="Buy"
                   render={({ field: { onChange, value } }) => (
                     <Select.Root onValueChange={onChange} defaultValue={value}>
                       <Select.Trigger />
@@ -187,6 +225,11 @@ const AddStockTrade = () => {
                   )}
                 />
               </Flex>
+              {errors.action && (
+                <Text color="red" as="p">
+                  {errors.action.message}
+                </Text>
+              )}
 
               {/* Number of Shares */}
               <Flex gap="3" align="center">
@@ -201,6 +244,11 @@ const AddStockTrade = () => {
                   onBlur={calcAmount}
                 />
               </Flex>
+              {errors.shares && (
+                <Text color="red" as="p">
+                  {errors.shares.message}
+                </Text>
+              )}
 
               {/* Price */}
               <Flex gap="3" align="center">
@@ -215,6 +263,11 @@ const AddStockTrade = () => {
                   onBlur={calcAmount}
                 />
               </Flex>
+              {errors.price && (
+                <Text color="red" as="p">
+                  {errors.price.message}
+                </Text>
+              )}
 
               {/* Fees */}
               <Flex gap="3" align="center">
@@ -229,6 +282,11 @@ const AddStockTrade = () => {
                   onBlur={calcAmount}
                 />
               </Flex>
+              {errors.fees && (
+                <Text color="red" as="p">
+                  {errors.fees.message}
+                </Text>
+              )}
 
               {/* Amount */}
               <Flex gap="3" align="center">
@@ -247,9 +305,9 @@ const AddStockTrade = () => {
                   Cancel
                 </Button>
               </Dialog.Close>
-              <Dialog.Close>
+              {/* <Dialog.Close> */}
                 <Button type="submit">Save</Button>
-              </Dialog.Close>
+              {/* </Dialog.Close> */}
             </Flex>
           </form>
         </Dialog.Content>
