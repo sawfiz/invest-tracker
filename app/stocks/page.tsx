@@ -3,6 +3,7 @@ import AddStockTrade from "./AddStockTrade";
 import { Table } from "@radix-ui/themes";
 import prisma from "@/prisma/client";
 import yahooFinance from "yahoo-finance2";
+import { MdExpandMore } from "react-icons/md";
 
 const StocksPage = async () => {
   const stockTrades = await prisma.stockTrade.findMany();
@@ -15,8 +16,10 @@ const StocksPage = async () => {
       <Table.Root>
         <Table.Header>
           <Table.Row>
-            <Table.ColumnHeaderCell>Date</Table.ColumnHeaderCell>
+            {/* <Table.ColumnHeaderCell>Date</Table.ColumnHeaderCell> */}
+            <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>Ticker</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell className=" text-right">Shares</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell className=" text-right">Cost</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell className=" text-right">Price</Table.ColumnHeaderCell>
@@ -27,15 +30,17 @@ const StocksPage = async () => {
         <Table.Body>
           {stockTrades.map(async (trade) => {
             const quote = await yahooFinance.quote(trade.ticker);
-            console.log("🚀 ~ {stockTrades.map ~ currentPrice:", quote);
             return (
               <Table.Row key={trade.id}>
-                <Table.Cell>
+                {/* <Table.Cell>
                   {trade.date.toDateString().substring(0, 3) +
                     " " +
                     trade.date.toISOString().substring(0, 10)}
-                </Table.Cell>
+                </Table.Cell> */}
+                <Table.Cell><MdExpandMore /></Table.Cell>
                 <Table.Cell>{trade.ticker}</Table.Cell>
+                <Table.Cell>{quote?.longName}</Table.Cell>
+
                 <Table.Cell className=" text-right">{trade.shares }</Table.Cell>
                 <Table.Cell className=" text-right">{trade.price}</Table.Cell>
                 <Table.Cell className=" text-right">{quote.regularMarketPrice}</Table.Cell>

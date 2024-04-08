@@ -19,6 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createStockTradeSchema } from "../validationSchemas";
 import { z } from "zod";
 import ErrorMessage from "../components/ErrorMessage";
+import prisma from "@/prisma/client";
 
 type StockTradeForm = z.infer<typeof createStockTradeSchema>;
 
@@ -43,7 +44,7 @@ const AddStockTrade = () => {
       price: 0,
       fees: 0,
       amount: 0,
-      notes: ""
+      notes: "",
     },
   });
 
@@ -64,8 +65,11 @@ const AddStockTrade = () => {
   // Submit form data to the api / database
   const onSubmit = async (data: StockTradeForm) => {
     calcAmount();
+    console.log(data)
     try {
-      await axios.post("/api/stocks", data);
+      await axios.post("/api/stocks", {ticker: data.ticker})
+
+      await axios.post("/api/stocksTrades", data);
       setIsSubmitSuccessful(true);
       setOpenDialog(false);
     } catch (error) {

@@ -47,3 +47,8 @@ enum Trader {
   Justin
   Shuya
 }
+
+model Stock {
+  id        Int       @id @default(autoincrement())
+  ticker    String    @db.VarChar(255)
+}

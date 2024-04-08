@@ -37,3 +37,11 @@ export const createStockTradeSchema = z.object({
   }),
   notes: z.string(),
 });
+
+// Define validation schema
+export const createStockSchema = z.object({
+  ticker: z
+    .string()
+    .min(1, { message: customErrorMessages.required("Ticker") })
+    .max(255),
+});
