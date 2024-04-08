@@ -20,6 +20,9 @@
     "react-hook-form": "^7.51.2",
     "react-icons": "^5.0.1",
     "react-simplemde-editor": "^5.2.0",
+    "yahoo-finance2": "^2.11.1",
+    "yahoo-stock-prices": "^1.1.0",
+    "yahoo-stock-prices-fetch": "^1.4.4",
     "zod": "^3.22.4"
   },
   "devDependencies": {
