@@ -10,6 +10,8 @@ import {
   Callout,
   Spinner,
 } from "@radix-ui/themes";
+import SimpleMDE from "react-simplemde-editor";
+import "easymde/dist/easymde.min.css";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
@@ -41,6 +43,7 @@ const AddStockTrade = () => {
       price: 0,
       fees: 0,
       amount: 0,
+      notes: ""
     },
   });
 
@@ -61,8 +64,6 @@ const AddStockTrade = () => {
   // Submit form data to the api / database
   const onSubmit = async (data: StockTradeForm) => {
     calcAmount();
-    console.log(data);
-    console.log(getValues("date").toISOString());
     try {
       await axios.post("/api/stocks", data);
       setIsSubmitSuccessful(true);
@@ -94,7 +95,7 @@ const AddStockTrade = () => {
           <Button>Add Trade</Button>
         </Dialog.Trigger>
 
-        <Dialog.Content maxWidth="300px">
+        <Dialog.Content maxWidth="600px">
           <Dialog.Title>Add a Stock Trade</Dialog.Title>
 
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -276,6 +277,16 @@ const AddStockTrade = () => {
                 <Box {...register("amount")}>{amount} </Box>
               </Flex>
             </Flex>
+
+            {/* SimpleMDE does not accept additonal props
+            Use Controller to register it with react-hook-form */}
+            <Controller
+              name="notes"
+              control={control}
+              render={({ field }) => (
+                <SimpleMDE placeholder="Description" {...field} />
+              )}
+            />
 
             <Flex gap="3" mt="4" justify="end">
               <Dialog.Close>

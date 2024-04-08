@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
       price: body.price,
       fees: body.fees,
       amount: body.shares * body.price + body.fees,
+      notes: body.notes,
     },
   });
   return NextResponse.json(newStockTrade, { status: 201 });

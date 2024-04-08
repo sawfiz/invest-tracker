@@ -24,6 +24,7 @@ model StockTrade {
   price     Float
   fees      Float
   amount    Float
+  notes     String?   @db.Text
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }

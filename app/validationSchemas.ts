@@ -32,7 +32,8 @@ export const createStockTradeSchema = z.object({
   fees: z.number().refine((fees) => !!fees, {
     message: customErrorMessages.required("Fees"),
   }),
-    amount: z.number().refine((amount) => !!amount, {
-      message: customErrorMessages.required("Amount"),
-    }),
+  amount: z.number().refine((amount) => !!amount, {
+    message: customErrorMessages.required("Amount"),
+  }),
+  notes: z.string(),
 });
