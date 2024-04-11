@@ -64,14 +64,16 @@ const AddStockTrade = () => {
       (getValues("fees") || 0);
     setAmount(value);
     setValue("amount", value);
+    console.log(Object.keys(errors).length)
+    console.log(errors)
   };
 
   // Submit form data to the api / database
   const onSubmit = async (data: StockTradeForm) => {
     calcAmount();
     console.log(data);
-    try {
-      await axios.post("/api/stocks", { ticker: data.ticker });
+    // try {
+      // await axios.post("/api/stocks", { ticker: data.ticker });
 
       try {
         await axios.post("/api/stocksTrades", data);
@@ -81,10 +83,10 @@ const AddStockTrade = () => {
         console.log(error);
         setError("An unexpected error has occured.");
       }
-    } catch (error) {
-      alert(error);
-      setError("The ticker symbol does not exist.");
-    }
+    // } catch (error) {
+      // alert(error);
+      // setError("The ticker symbol does not exist.");
+    // }
   };
 
   // Reset the form after a successful submission
@@ -323,7 +325,7 @@ const AddStockTrade = () => {
                 </Button>
               </Dialog.Close>
               {/* <Dialog.Close> */}
-              <Button type="submit">
+              <Button type="submit" disabled={!tickerFound || Object.keys(errors).length!==0}>
                 Save <Spinner loading={isSubmitting} />
               </Button>
               {/* </Dialog.Close> */}
