@@ -38,7 +38,7 @@ const StocksPage = async () => {
                     trade.date.toISOString().substring(0, 10)}
                 </Table.Cell> */}
                 <Table.Cell><MdExpandMore /></Table.Cell>
-                <Table.Cell>{trade.ticker}</Table.Cell>
+                <Table.Cell>{quote?.symbol}</Table.Cell>
                 <Table.Cell>{quote?.longName}</Table.Cell>
 
                 <Table.Cell className=" text-right">{trade.shares }</Table.Cell>

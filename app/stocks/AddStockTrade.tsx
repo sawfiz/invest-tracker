@@ -13,13 +13,14 @@ import {
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createStockTradeSchema } from "../validationSchemas";
 import { z } from "zod";
 import ErrorMessage from "../components/ErrorMessage";
-import prisma from "@/prisma/client";
+import yahooFinance from "yahoo-finance2";
+import StockName from "../components/StockName";
 
 type StockTradeForm = z.infer<typeof createStockTradeSchema>;
 
@@ -50,6 +51,9 @@ const AddStockTrade = () => {
 
   const [amount, setAmount] = useState(0);
   const [error, setError] = useState("");
+  const [checkingTicker, setCheckingTicker] = useState(false);
+  const [tickerFound, setTickerFound] = useState(true);
+  const [stockName, setStockName] = useState("");
   const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -65,16 +69,21 @@ const AddStockTrade = () => {
   // Submit form data to the api / database
   const onSubmit = async (data: StockTradeForm) => {
     calcAmount();
-    console.log(data)
+    console.log(data);
     try {
-      await axios.post("/api/stocks", {ticker: data.ticker})
+      await axios.post("/api/stocks", { ticker: data.ticker });
 
-      await axios.post("/api/stocksTrades", data);
-      setIsSubmitSuccessful(true);
-      setOpenDialog(false);
+      try {
+        await axios.post("/api/stocksTrades", data);
+        setIsSubmitSuccessful(true);
+        setOpenDialog(false);
+      } catch (error) {
+        console.log(error);
+        setError("An unexpected error has occured.");
+      }
     } catch (error) {
-      console.log(error);
-      setError("An unexpected error has occured.");
+      alert(error);
+      setError("The ticker symbol does not exist.");
     }
   };
 
@@ -193,9 +202,24 @@ const AddStockTrade = () => {
                     required: { value: true, message: "Ticker is required" },
                   })}
                   placeholder="Enter a ticker symbol"
+                  onBlur={async()=> {
+                    setCheckingTicker(true)
+                    setTickerFound(true)
+                    try {
+                      const res = await axios.get(`/api/stocks/?ticker=${getValues("ticker")}`);
+                      console.log("🚀 ~ onBlur=async ~ res:", res)
+                      setStockName(res.data.longName)
+                    } catch (error) {
+                      setTickerFound(false)
+                    }
+                    setCheckingTicker(false)
+                  }}
                 />
+                <Spinner loading={checkingTicker} />
               </Flex>
               <ErrorMessage>{errors.ticker?.message}</ErrorMessage>
+              <ErrorMessage>{!tickerFound && "Ticker not found."}</ErrorMessage>
+              <StockName>{tickerFound && stockName}</StockName>
 
               {/* Action */}
               <Flex gap="3" align="center">
