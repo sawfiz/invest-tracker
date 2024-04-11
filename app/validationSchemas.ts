@@ -32,7 +32,9 @@ export const createStockTradeSchema = z.object({
   fees: z.number().refine((fees) => !!fees, {
     message: customErrorMessages.required("Fees"),
   }),
+  // No need to validate amount
   amount: z.number(),
+  // No need to validate notes
   notes: z.string(),
 });
 

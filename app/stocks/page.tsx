@@ -16,7 +16,6 @@ const StocksPage = async () => {
       <Table.Root>
         <Table.Header>
           <Table.Row>
-            {/* <Table.ColumnHeaderCell>Date</Table.ColumnHeaderCell> */}
             <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>Ticker</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
@@ -32,11 +31,6 @@ const StocksPage = async () => {
             const quote = await yahooFinance.quote(trade.ticker);
             return (
               <Table.Row key={trade.id}>
-                {/* <Table.Cell>
-                  {trade.date.toDateString().substring(0, 3) +
-                    " " +
-                    trade.date.toISOString().substring(0, 10)}
-                </Table.Cell> */}
                 <Table.Cell><MdExpandMore /></Table.Cell>
                 <Table.Cell>{quote?.symbol}</Table.Cell>
                 <Table.Cell>{quote?.longName}</Table.Cell>
@@ -46,7 +40,7 @@ const StocksPage = async () => {
                 <Table.Cell className=" text-right">{quote.regularMarketPrice}</Table.Cell>
                 <Table.Cell className=" text-right">
                   {(
-                    (quote?.regularMarketPrice - trade.price) *
+                    (quote?.regularMarketPrice! - trade.price) *
                     trade.shares
                   ).toLocaleString("en-US", {
                     minimumFractionDigits: 2,
@@ -55,7 +49,7 @@ const StocksPage = async () => {
                 </Table.Cell>
                 <Table.Cell className=" text-right">
                   {(
-                    (quote?.regularMarketPrice / trade.price - 1) *
+                    (quote?.regularMarketPrice! / trade.price - 1) *
                     100
                   ).toLocaleString("en-US", {
                     minimumFractionDigits: 2,

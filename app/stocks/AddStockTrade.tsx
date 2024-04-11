@@ -13,13 +13,12 @@ import {
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import React, { useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createStockTradeSchema } from "../validationSchemas";
 import { z } from "zod";
 import ErrorMessage from "../components/ErrorMessage";
-import yahooFinance from "yahoo-finance2";
 import StockName from "../components/StockName";
 
 type StockTradeForm = z.infer<typeof createStockTradeSchema>;
@@ -49,13 +48,13 @@ const AddStockTrade = () => {
     },
   });
 
+  const [openDialog, setOpenDialog] = useState(false);
   const [amount, setAmount] = useState(0);
   const [error, setError] = useState("");
   const [checkingTicker, setCheckingTicker] = useState(false);
   const [tickerFound, setTickerFound] = useState(true);
   const [stockName, setStockName] = useState("");
   const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
 
   // Calculate amount dynamically based on input changes
   const calcAmount = () => {
@@ -64,16 +63,12 @@ const AddStockTrade = () => {
       (getValues("fees") || 0);
     setAmount(value);
     setValue("amount", value);
-    console.log(Object.keys(errors).length)
-    console.log(errors)
   };
 
   // Submit form data to the api / database
   const onSubmit = async (data: StockTradeForm) => {
     calcAmount();
     console.log(data);
-    // try {
-      // await axios.post("/api/stocks", { ticker: data.ticker });
 
       try {
         await axios.post("/api/stocksTrades", data);
@@ -83,10 +78,6 @@ const AddStockTrade = () => {
         console.log(error);
         setError("An unexpected error has occured.");
       }
-    // } catch (error) {
-      // alert(error);
-      // setError("The ticker symbol does not exist.");
-    // }
   };
 
   // Reset the form after a successful submission
@@ -324,11 +315,9 @@ const AddStockTrade = () => {
                   Cancel
                 </Button>
               </Dialog.Close>
-              {/* <Dialog.Close> */}
               <Button type="submit" disabled={!tickerFound || Object.keys(errors).length!==0}>
                 Save <Spinner loading={isSubmitting} />
               </Button>
-              {/* </Dialog.Close> */}
             </Flex>
           </form>
         </Dialog.Content>
