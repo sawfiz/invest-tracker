@@ -11,8 +11,8 @@ import {
   Spinner,
   TextArea,
 } from "@radix-ui/themes";
-// import SimpleMDE from "react-simplemde-editor";
-// import "easymde/dist/easymde.min.css";
+import SimpleMDE from "react-simplemde-editor";
+import "easymde/dist/easymde.min.css";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
@@ -312,16 +312,16 @@ const AddStockTrade = () => {
 
             {/* SimpleMDE does not accept additonal props
             Use Controller to register it with react-hook-form */}
-            {/* <Controller
+            <Controller
               name="notes"
               control={control}
               render={({ field }) => (
                 <SimpleMDE placeholder="Description" {...field} />
               )}
-            /> */}
+            />
 
             {/* Notes */}
-            <Flex gap="3" align="center">
+            {/* <Flex gap="3" align="center">
               <label className="w-12">
                 <Text as="div" size="2" mb="1" weight="bold">
                   Notes
@@ -337,7 +337,7 @@ const AddStockTrade = () => {
                 </Box>
               )}
             />
-            </Flex>
+            </Flex> */}
 
             <Flex gap="3" mt="4" justify="end">
               <Dialog.Close>

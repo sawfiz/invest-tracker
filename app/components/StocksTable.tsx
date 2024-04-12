@@ -3,6 +3,7 @@ import { Table } from "@radix-ui/themes";
 import { MdExpandMore } from "react-icons/md";
 import yahooFinance from "yahoo-finance2";
 import prisma from "@/prisma/client";
+import axios from "axios";
 
 // interface Stock {
 //   id: number;
@@ -59,15 +60,33 @@ const StocksTable = async () => {
         {stocks.map(async (stock) => {
           // const quote = await axios.get(`/api/stocks/?ticker=${stock.ticker}`);
           const quote = await yahooFinance.quote(stock.ticker);
+
+          const trades = await prisma.stockTrade.findMany({
+            where: { ticker: stock.ticker },
+          });
+
+          let totalShares = 0;
+          let totalCost = 0;
+
+          trades.forEach((trade) => {
+            if (trade.action === "Buy") {
+              totalShares += trade.shares;
+              totalCost += trade.amount;
+            } else if (trade.action === "Sell") {
+              totalShares -= trade.shares;
+              totalCost -= trade.amount;
+            }
+          });
+
           const averageCostPerShare =
-            stock.totalShares !== 0 ? stock.totalCost / stock.totalShares : 0;
+            totalShares !== 0 ? totalCost / totalShares : 0;
           const marketValue = (
-            stock.totalShares * quote.regularMarketPrice!
+            totalShares * quote.regularMarketPrice!
           ).toLocaleString();
-          const dayPl = stock.totalShares * quote.regularMarketChange!;
+          const dayPl = totalShares * quote.regularMarketChange!;
           const pl =
             (quote.regularMarketPrice! - averageCostPerShare) *
-            stock.totalShares;
+            totalShares;
           const plPercentage =
             (quote.regularMarketPrice! / averageCostPerShare - 1) * 100;
 
@@ -79,7 +98,7 @@ const StocksTable = async () => {
               <Table.Cell>{quote?.symbol}</Table.Cell>
               <Table.Cell>{quote?.longName}</Table.Cell>
               <Table.Cell className="text-right">
-                {stock.totalShares.toLocaleString(undefined, {
+                {totalShares.toLocaleString(undefined, {
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 2,
                 })}
@@ -115,7 +134,7 @@ const StocksTable = async () => {
                 }) + "%"}
               </Table.Cell>
               <Table.Cell className="text-right">
-                {stock.totalCost.toLocaleString(undefined, {
+                {totalCost.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
