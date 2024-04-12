@@ -9,9 +9,10 @@ import {
   Box,
   Callout,
   Spinner,
+  TextArea,
 } from "@radix-ui/themes";
-import SimpleMDE from "react-simplemde-editor";
-import "easymde/dist/easymde.min.css";
+// import SimpleMDE from "react-simplemde-editor";
+// import "easymde/dist/easymde.min.css";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
@@ -63,6 +64,7 @@ const AddStockTrade = () => {
       (getValues("fees") || 0);
     setAmount(value);
     setValue("amount", value);
+    console.log(errors)
   };
 
   // Submit form data to the api / database
@@ -70,6 +72,8 @@ const AddStockTrade = () => {
     calcAmount();
     console.log(data);
 
+    try {
+      await axios.post("/api/stocks", data);
       try {
         await axios.post("/api/stocksTrades", data);
         setIsSubmitSuccessful(true);
@@ -78,6 +82,11 @@ const AddStockTrade = () => {
         console.log(error);
         setError("An unexpected error has occured.");
       }
+    } catch (error) {
+      console.log(error);
+      setError("An unexpected error has occured.");
+      
+    }
   };
 
   // Reset the form after a successful submission
@@ -195,17 +204,19 @@ const AddStockTrade = () => {
                     required: { value: true, message: "Ticker is required" },
                   })}
                   placeholder="Enter a ticker symbol"
-                  onBlur={async()=> {
-                    setCheckingTicker(true)
-                    setTickerFound(true)
+                  onBlur={async () => {
+                    setCheckingTicker(true);
+                    setTickerFound(true);
                     try {
-                      const res = await axios.get(`/api/stocks/?ticker=${getValues("ticker")}`);
-                      console.log("🚀 ~ onBlur=async ~ res:", res)
-                      setStockName(res.data.longName)
+                      const res = await axios.get(
+                        `/api/stocks/?ticker=${getValues("ticker")}`
+                      );
+                      console.log("🚀 ~ onBlur=async ~ res:", res);
+                      setStockName(res.data.longName);
                     } catch (error) {
-                      setTickerFound(false)
+                      setTickerFound(false);
                     }
-                    setCheckingTicker(false)
+                    setCheckingTicker(false);
                   }}
                 />
                 <Spinner loading={checkingTicker} />
@@ -301,13 +312,32 @@ const AddStockTrade = () => {
 
             {/* SimpleMDE does not accept additonal props
             Use Controller to register it with react-hook-form */}
-            <Controller
+            {/* <Controller
               name="notes"
               control={control}
               render={({ field }) => (
                 <SimpleMDE placeholder="Description" {...field} />
               )}
+            /> */}
+
+            {/* Notes */}
+            <Flex gap="3" align="center">
+              <label className="w-12">
+                <Text as="div" size="2" mb="1" weight="bold">
+                  Notes
+                </Text>
+              </label>
+              <Controller
+              name="notes"
+              control={control}
+              render={({ field }) => (
+                <Box maxWidth="300px">
+
+                  <TextArea placeholder="Description" {...field} />
+                </Box>
+              )}
             />
+            </Flex>
 
             <Flex gap="3" mt="4" justify="end">
               <Dialog.Close>
@@ -315,7 +345,10 @@ const AddStockTrade = () => {
                   Cancel
                 </Button>
               </Dialog.Close>
-              <Button type="submit" disabled={!tickerFound || Object.keys(errors).length!==0}>
+              <Button
+                type="submit"
+                disabled={!tickerFound || Object.keys(errors).length !== 0}
+              >
                 Save <Spinner loading={isSubmitting} />
               </Button>
             </Flex>

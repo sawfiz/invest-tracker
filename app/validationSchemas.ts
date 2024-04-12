@@ -45,3 +45,5 @@ export const createStockSchema = z.object({
     .min(1, { message: customErrorMessages.required("Ticker") })
     .max(255),
 });
+
+

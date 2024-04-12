@@ -33,9 +33,26 @@ export async function POST(request: NextRequest) {
 
   if (stockInPortfolio.length === 0) {
     // Create a new StockTrade in the database
-    const newStock = await prisma.stock.create({
+    await prisma.stock.create({
       data: {
         ticker: body.ticker,
+        totalShares: body.shares,
+        totalCost: body.amount,
+      },
+    });
+  } else {
+    // Create a new StockTrade in the database
+    await prisma.stock.update({
+      where: { id: stockInPortfolio[0].id },
+      data: {
+        totalShares:
+          stockInPortfolio[0].totalShares +
+          (body.action === "Buy" ? 1 : 0) * body.shares -
+          (body.action === "Sell" ? 1 : 0) * body.shares,
+        totalCost:
+          stockInPortfolio[0].totalCost +
+          (body.action === "Buy" ? 1 : 0) * body.amount -
+          (body.action === "Sell" ? 1 : 0) * body.amount,
       },
     });
   }

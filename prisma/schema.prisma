@@ -49,6 +49,8 @@ enum Trader {
 }
 
 model Stock {
-  id        Int       @id @default(autoincrement())
-  ticker    String    @db.VarChar(255)
+  id          Int    @id @default(autoincrement())
+  ticker      String @db.VarChar(255)
+  totalShares Float
+  totalCost   Float
 }
